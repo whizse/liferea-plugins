@@ -1,6 +1,6 @@
 [Plugin]
 Module=markallreadinactive
-Loader=python
+Loader=python3
 IAge=2
 Name=Disable Mark All As Read
 Description=Disables the menu entry for "Mark All As Read"
