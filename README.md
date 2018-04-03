@@ -9,3 +9,9 @@ is a little bit too easy to hit by mistake.
 
 It does not disable the same functionality in the context menu for
 feeds and folders.
+
+##  Hide headline view ##
+Adds a menu entry (View &rarr; Hide Headline View) and a keyboard shortcut
+(Ctrl+H) to hide the headline view. 
+
+Makes it easier (less scrolling) to read articles on small screens.

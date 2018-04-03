@@ -1,0 +1,9 @@
+[Plugin]
+Module=hide-headlines
+Loader=python3
+IAge=2
+Name=Hide headlines
+Description=Hides the headline view
+Authors=Sven Arvidsson <sa@whiz.se>
+Copyright=Copyright © 2018 Sven Arvidsson
+Website=http://www.whiz.se
