@@ -1,5 +1,4 @@
 # Liferea plugins #
-
 Place in ~/.local/share/liferea/plugins or what your `$XDG_DATA_DIRS`
 points to.
 
@@ -11,8 +10,19 @@ toolbar button.
 It does not disable the same functionality in the context menu for
 feeds and folders.
 
-##  Hide headline view ##
+##  Hide Headline View ##
 Adds a menu entry (View &rarr; Hide Headline View) and a keyboard shortcut
 (Ctrl+H) to hide the headline view. 
 
 Makes it easier (less scrolling) to read articles on small screens.
+
+##  Python Console ##
+Interactive Python Console for Liferea! Simplifies writing and
+debugging plugins. 
+
+Based on the plugin for Rhythmbox, which in turn was based on gEdit and
+Epiphany. 99.9% of the work is not mine, I do take credit for the new
+bugs in this version.
+
+## helpers ##
+Not a plugin. Small utilities I re-use for plugins.
