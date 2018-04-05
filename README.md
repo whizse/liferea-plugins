@@ -24,5 +24,5 @@ Based on the plugin for Rhythmbox, which in turn was based on gEdit and
 Epiphany. 99.9% of the work is not mine, I do take credit for the new
 bugs in this version.
 
-## helpers ##
+## utilities ##
 Not a plugin. Small utilities I re-use for plugins.
