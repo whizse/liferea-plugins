@@ -24,5 +24,15 @@ Based on the plugin for Rhythmbox, which in turn was based on gEdit and
 Epiphany. 99.9% of the work is not mine, I do take credit for the new
 bugs in this version.
 
+##  Floating statusbar ##
+Regain some screen real estate by replacing the static statusbar with
+a floating counterpart. Similar to the ones used in web browsers. 
+
+Uses code gratefully borrowed from the Catfish file searching tool,
+thank you guys!
+
+This is an experimental plugin that reparents some UI elements in the
+main Liferea window.
+
 ## utilities ##
 Not a plugin. Small utilities I re-use for plugins.

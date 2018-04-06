@@ -1,0 +1,10 @@
+[Plugin]
+Module=floating-statusbar
+Icon=view-restore
+Loader=python3
+IAge=2
+Name=Floating statusbar
+Description=Replaces the static statusbar with a floating one.
+Authors=Sven Arvidsson <sa@whiz.se>
+Copyright=Copyright © 2018 Sven Arvidsson
+Website=https://github.com/whizse/liferea-plugins
