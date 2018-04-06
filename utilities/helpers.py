@@ -1,3 +1,9 @@
+# FIXME/TODO: These functions could probably be rewritten and
+# combined, or reuse a more generic function to walk the gtk hierarchy
+
+# The find_by_* functions are suitable for monkey patchins into
+# Gtk.Widgets, replace first argument with self.
+
 from gi.repository import Gtk
 
 def find_by_name(widget, shell, name):
@@ -45,10 +51,24 @@ def find_by_name(widget, shell, name):
     else:
         return False
 
-# !!!!!!!!!!!!!!!!!!!!!!
-# FIXME: This needs a function that returns the first
-# child widget of matching type
-#self.markasreadbutton = toolbarbutton.get_children()[0]
+def find_by_type(widget, wantedtype):
+    """
+    Returns the first child of type from widget. Returns None if none
+    found.
+    """
+    widgettype = widget.class_path()[1].split('.')[-1]
+    # FIXME Is there a better way to get a human readable string for the
+    # type?
+    if widgettype == wantedtype:
+        return widget
+    if getattr(widget, "get_children", None):
+    # FIXME: We should check for get_submenu etc too...
+        for child in widget.get_children():
+            childmatch = find_by_class(child, wantedtype)
+            if childmatch:
+                return childmatch
+    else:
+        return None
 
     
 def list_names(widget, names):
@@ -126,35 +146,3 @@ def hierarchy(widget, level=0):
             hierarchy(child, level+1)
     else:
         return False
-
-hierarchy(shell.get_window())
-
-# x = find_by_name(shell.get_window(), shell, "MarkAllFeedsAsRead")
-# print(x)
-# print(x.get_name())
-# print(names)
-
-# Needs to handle internal children
-# sub = find_by_name(shell.get_window(), shell, "SubscriptionsMenu")
-# print(sub)
-# submenu = sub.get_submenu()
-# for c in submenu.get_children():
-#     print(c.get_name())
-# print(sub)
-# print("External children: ")
-# print(sub.get_children())
-# sub.forall(cb, None)
-
-# names.append("Foo") # Non-match
-
-names = []
-list_names(shell.get_window(), names)
-#print(names)
-
-for item in names:
-    look = find_by_name(shell.get_window(), shell, item)
-    print((item, look))
-    # print()
-    # if not look:
-    #     print("Not found")
-    #     print((item, look))
