@@ -127,7 +127,7 @@ class FloatingStatusBarPlugin(GObject.Object, Liferea.ShellActivatable):
         """Update title with new and unread"""
         unread = label.get_label()
         if unread is not "":
-            self.window.set_title(self.oldtitle + " - " + unread)
+            self.window.set_title(unread + " — " + self.oldtitle)
 
     def on_floating_bar_enter_notify(self, statusbar, gparam):
         """Hide from the mouse cursor"""
