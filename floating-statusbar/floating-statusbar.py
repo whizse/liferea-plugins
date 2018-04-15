@@ -111,7 +111,9 @@ class FloatingStatusBarPlugin(GObject.Object, Liferea.ShellActivatable):
     def update_statusbar(self, label, gparam):
         """Update the floating statusbar with status from the old"""
         status = label.get_label()
-        if status is not "":
+        if status is "":
+            self.statusbar.hide()
+        else:
             if self.timeout:
                 GLib.source_remove(self.timeout)
             self.statusbar_label.set_label(status)
