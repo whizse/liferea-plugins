@@ -1,0 +1,11 @@
+[Plugin]
+Module=darkmode
+Loader=python3
+IAge=2
+Name=Dark Mode
+Version=1.0
+Description=Dark GTK theme and dark CSS.
+Authors=Sven Arvidsson <sa@whiz.se>;Lars Windolf <lars.windolf@gmx.de>;Mozbugbox <mozbugbox@yahoo.com.au>;https://mybrowseraddon.com/dark-mode.html
+Copyright=Copyright © 2018 Sven Arvidsson
+Website=https://github.com/whizse/liferea-plugins
+

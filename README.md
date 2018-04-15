@@ -34,5 +34,14 @@ thank you guys!
 This is an experimental plugin that reparents some UI elements in the
 main Liferea window.
 
+## Dark Mode ##
+Enables the dark GTK theme variant with matching dark CSS
+override. This plugin is heavily based on the [inspector plugin](https://github.com/lwindolf/liferea-webkit2-inspector) and the
+[Firefox WebExtension Dark Mode](https://mybrowseraddon.com/dark-mode.html).
+
+For now it uses a single theme. Plans include support for all the
+variants shipped with the Firefox extension as well as site specific
+styles and a blacklist for sites to exclude.
+
 ## utilities ##
 Not a plugin. Small utilities I re-use for plugins.
