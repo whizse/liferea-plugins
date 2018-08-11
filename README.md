@@ -6,12 +6,12 @@ points to.
 This plugin should be considered deprecated. Liferea 1.12.3 warns when
 Mark All As Read is used.
 
-~~Disables the menu entry for "Subscriptions" &rarr; "Mark All As
+<strike>Disables the menu entry for "Subscriptions" &rarr; "Mark All As
 Read" as it is a little bit too easy to hit by mistake. Also disables
 the toolbar button.
 
 It does not disable the same functionality in the context menu for
-feeds and folders.~~
+feeds and folders.</strike>
 
 ##  Hide Headline View ##
 Adds a menu entry (View &rarr; Hide Headline View) and a keyboard shortcut
