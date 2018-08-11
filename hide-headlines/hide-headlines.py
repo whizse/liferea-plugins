@@ -3,56 +3,30 @@
 # Hide wideViewItems (a GtkViewPort)
 # Also hide feedlist?
 # Toggle button in toolbar?
+# Have keynav, n/p working with headlines closed?
 
 from gi.repository import GObject
 from gi.repository import Gtk
-from gi.repository import Gdk
+from gi.repository import Gio
+from gi.repository import GLib
 from gi.repository import Liferea
 
-def find_by_name(widget, shell, name):
+def remove_menuitem(action, menus, level=0):
     """
-    Finds a widget by name. Searches recursively for a GtkWidget with
-    matching name or buildable ID. (Both listed as "name" in GTK
-    Inspector).
-
-    Returns a GtkWidget or False if none exists with name.
-
-    Uses get_children, and if applicable, get_submenu for GtkMenuItem
-    which for some reason doesn't list these in get_children. Do other
-    GTK widgets have the same pecularity?
+    Given an action name such as app.function, remove it from a Gio.Menu
     """
+    for i in range(menus.get_n_items()):
+        link = menus.iterate_item_links(i)
+        if link.next():
+            remove_menuitem(action, link.get_value(), level+1)
+        else:
+            attr = menus.iterate_item_attributes(i)
+            while attr.next():
+                if str(attr.get_name()) == "action":
+                    value = str(attr.get_value()).strip("'")
+                    if value == action:
+                        menus.remove(i)
 
-    # FIXME: Should probably return None
-    # FIXME: get rid of shell.lookup?
-
-    all_children = []
-    byshell = shell.lookup(name)
-    get_children = getattr(widget, "get_children", None)
-    get_submenu = getattr(widget, "get_submenu", None)
-
-    if byshell:
-        return byshell
-    if widget.get_name() == name:
-        return widget
-    if Gtk.Buildable.get_name(widget) == name:
-        return widget
-    if get_children:
-        for c in widget.get_children():
-            all_children.append(c)
-    if get_submenu:
-        submenu = widget.get_submenu()
-        if submenu is not None:
-        # Widget supports get_submenu, but has None set
-            for s in widget.get_submenu():
-                all_children.append(s)
-    
-    if len(all_children) > 0:
-        for child in all_children:
-            childwidget = find_by_name(child, shell, name)
-            if childwidget:
-                return childwidget
-    else:
-        return False
 
 class HideHeadlinesPlugin(GObject.Object, Liferea.ShellActivatable):
     __gtype_name__ = 'HideHeadlinesPlugin'
@@ -60,35 +34,30 @@ class HideHeadlinesPlugin(GObject.Object, Liferea.ShellActivatable):
     object = GObject.property(type=GObject.Object)
     shell = GObject.property(type=Liferea.Shell)
 
-    def _toggle_hide(self, *args):
+    def _toggle_hide(self, action, value):
+        action.set_state(value)
         self._normalviewitems.props.visible = not self._normalviewitems.props.visible
 
     def __init__(self):
-        self._hide_menuitem = None
-        self._hide_menuitem_cb = None
-        
-        self._viewmenu = None
         self._normalviewitems = None
+        self._viewmenu = None
+        self._app = None
 
     def do_activate(self):
         win = self.shell.get_window()
-        self._normalviewitems = find_by_name(win, self.shell, "normalViewItems")
-        self._viewmenu = find_by_name(win, self.shell, "ViewMenu")
-        
-        self._hide_menuitem = Gtk.CheckMenuItem(label="Hide Headline View")
-        self._hide_menuitem_cb = self._hide_menuitem.connect("activate",
-                                                             self._toggle_hide)
+        self._normalviewitems = self.shell.get_property("builder").get_object("normalViewItems")
 
-        accel = Gtk.AccelGroup()
-        win.add_accel_group(accel)
+        action = Gio.SimpleAction.new_stateful("HideHeadlines", None, GLib.Variant.new_boolean(False))
+        action.connect("change-state", self._toggle_hide)
 
-        self._hide_menuitem.add_accelerator("activate", accel, Gdk.KEY_h,
-                                            Gdk.ModifierType.CONTROL_MASK,
-                                            Gtk.AccelFlags.VISIBLE)
-        self._viewmenu.get_submenu().append(self._hide_menuitem)
-        self._hide_menuitem.show()
+        self._app = win.get_application()
+        self._app.add_action(action)
+        self._app.set_accels_for_action("app.HideHeadlines", ["<Control>H"])
+
+        self._viewmenu  = self.shell.get_property("builder").get_object("view_menu")
+        self._viewmenu.append("Hide Headline View", "app.HideHeadlines")
 
     def do_deactivate(self):
         self._normalviewitems.show()
-        self._hide_menuitem.disconnect(self._hide_menuitem_cb)
-        self._viewmenu.get_submenu().remove(self._hide_menuitem)
+        self._app.remove_action('HideHeadlines')
+        remove_menuitem("app.HideHeadlines", self._viewmenu)
