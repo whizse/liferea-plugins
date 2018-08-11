@@ -8,7 +8,6 @@
 #      https://cfoch.github.io/tech/2017/08/24/tutorial-writing-a-plugin-in-pitivi-2017.html
 # Steal ideas from Rb console?
 #      https://github.com/GNOME/rhythmbox/blob/master/plugins/pythonconsole/pythonconsole.py
-# Don't reset the history when window is closed
 
 from gi.repository import GObject, Peas, Gtk, Gio
 from gi.repository import Liferea
@@ -75,7 +74,7 @@ class PythonConsolePlugin(GObject.Object, Liferea.ShellActivatable):
             self.console_window = Gtk.Window()
             self.console_window.set_title('Lifera Python Console')
             self.console_window.add(console)
-            self.console_window.connect('destroy', self.destroy_console)
+            self.console_window.connect('delete-event', self.hide_console)
             self.console_window.show_all()
         else:
             self.console_window.show_all()
@@ -84,3 +83,7 @@ class PythonConsolePlugin(GObject.Object, Liferea.ShellActivatable):
     def destroy_console(self, *args):
         self.console_window.destroy()
         self.console_window = None
+
+    def hide_console(self, *args):
+        self.console_window.hide()
+        return True
