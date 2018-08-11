@@ -18,51 +18,6 @@
 from gi.repository import GObject, Gtk
 from gi.repository import Liferea
 
-def find_by_name(widget, shell, name):
-    """
-    Finds a widget by name. Searches recursively for a GtkWidget with
-    matching name or buildable ID. (Both listed as "name" in GTK
-    Inspector).
-
-    Returns a GtkWidget or False if none exists with name.
-
-    Uses get_children, and if applicable, get_submenu for GtkMenuItem
-    which for some reason doesn't list these in get_children. Do other
-    GTK widgets have the same pecularity?
-    """
-
-    # FIXME: Should probably return None
-    # FIXME: get rid of shell.lookup?
-
-    all_children = []
-    byshell = shell.lookup(name)
-    get_children = getattr(widget, "get_children", None)
-    get_submenu = getattr(widget, "get_submenu", None)
-
-    if byshell:
-        return byshell
-    if widget.get_name() == name:
-        return widget
-    if Gtk.Buildable.get_name(widget) == name:
-        return widget
-    if get_children:
-        for c in widget.get_children():
-            all_children.append(c)
-    if get_submenu:
-        submenu = widget.get_submenu()
-        if submenu is not None:
-        # Widget supports get_submenu, but has None set
-            for s in widget.get_submenu():
-                all_children.append(s)
-    
-    if len(all_children) > 0:
-        for child in all_children:
-            childwidget = find_by_name(child, shell, name)
-            if childwidget:
-                return childwidget
-    else:
-        return False
-
 class MarkAllReadInactivePlugin (GObject.Object, Liferea.ShellActivatable):
     __gtype_name__ = 'SetMarkAllFeedsAsReadInactive'
 
@@ -70,28 +25,20 @@ class MarkAllReadInactivePlugin (GObject.Object, Liferea.ShellActivatable):
     shell = GObject.property(type=Liferea.Shell)
 
     def __init__(self):
-        self.menuitem = None
-
+        self.action = None
+        self.toolbarbutton = None
+        
     def do_activate(self):
-        if self.menuitem is None:
-            win = self.shell.get_window()
+        self.app = self.shell.get_window().get_application()
+        self.action = self.app.lookup_action('mark-all-feeds-read')
+        self.app.remove_action('mark-all-feeds-read')
 
-            # Ugly hack to find the menu item. Liferea 1.2.13 no
-            # longer gives the entry a name or id
-            submenu = win.get_children()[0]
-            self.menuitem = submenu.get_children()[0].get_submenu().get_children()[1]
-            self.menuitem.set_sensitive(False)
-
-            toolbarbutton = find_by_name(win, self.shell,
-                                         "MarkAsReadButton")
-            # Liferea toggles the sensitivity on the ToolButton on and
-            # off, so we target the child Button instead
-
-            # FIXME: This needs a function that returns the first
-            # child widget of matching type
-            self.markasreadbutton = toolbarbutton.get_children()[0]
-            self.markasreadbutton.set_sensitive(False)
+        self.toolbarbutton = self.shell.lookup("MarkAsReadButton")
+        self.toolbarbutton.set_sensitive(False)
 
     def do_deactivate(self):
-        self.menuitem.set_sensitive(True)
-        self.markasreadbutton.set_sensitive(True)
+        self.app.add_action(self.action)
+        self.action = None
+
+        self.toolbarbutton.set_sensitive(True)
+        self.toolbarbutton = None
