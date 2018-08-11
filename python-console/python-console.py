@@ -1,4 +1,4 @@
-from gi.repository import GObject, Peas, Gtk
+from gi.repository import GObject, Peas, Gtk, Gio
 from gi.repository import Liferea
 
 from pc import PythonConsole
@@ -13,32 +13,24 @@ class PythonConsolePlugin(GObject.Object, Liferea.ShellActivatable):
         self.console_window = None
 
     def do_activate(self):
-        self._ui_manager = self.shell.get_property("ui-manager")
+        action = Gio.SimpleAction.new('PythonConsole', None)
+        self.x = action.connect("activate", self.show_console, self.shell)
 
-        console_action = Gtk.Action('PythonConsole', 'Python Console', 'Run the Python console', None)
-        console_action.connect("activate", self.show_console, self.shell)
+        self._app = self.shell.get_window().get_application ()
+        self._app.add_action(action)
 
-        self._actiongroup = Gtk.ActionGroup("PythonConsoleAction")
-        self._actiongroup.add_action(console_action)
-
-        self._ui_manager.insert_action_group(self._actiongroup)
-        self._console_action_id = self._ui_manager.add_ui_from_string(
-                  """<ui>
-                        <menubar name='MainwindowMenubar'>
-                          <menu action='ToolsMenu'>
-                            <menuitem action='PythonConsole'/>
-                          </menu>
-                        </menubar>
-                     </ui>""")
+        self.toolsmenu = self.shell.get_property("builder").get_object("tools_menu")
+        self.toolsmenu.append('Python Console', 'app.PythonConsole')
 
     def do_deactivate(self):
-        self._ui_manager.remove_action_group(self._actiongroup)
-        # Removing action group does not remove the UI elements
-        self._ui_manager.remove_ui(self._console_action_id)
+        # FIXME: removes action but not the menu entry
+        # this doesn't seem possible in a Gio.Menu
+        self._app.remove_action('PythonConsole')
+
         if self.console_window is not None:
             self.console_window.destroy()
 
-    def show_console(self, parameter, shell):
+    def show_console(self, action, variant, shell):
         if not self.console_window:
             ns = {'__builtins__' : __builtins__, 
                   'Liferea' : Liferea,
