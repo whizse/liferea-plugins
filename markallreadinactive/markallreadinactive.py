@@ -75,9 +75,13 @@ class MarkAllReadInactivePlugin (GObject.Object, Liferea.ShellActivatable):
     def do_activate(self):
         if self.menuitem is None:
             win = self.shell.get_window()
-            self.menuitem = find_by_name(win, self.shell,
-                                         "MarkAllFeedsAsRead")
+
+            # Ugly hack to find the menu item. Liferea 1.2.13 no
+            # longer gives the entry a name or id
+            submenu = win.get_children()[0]
+            self.menuitem = submenu.get_children()[0].get_submenu().get_children()[1]
             self.menuitem.set_sensitive(False)
+
             toolbarbutton = find_by_name(win, self.shell,
                                          "MarkAsReadButton")
             # Liferea toggles the sensitivity on the ToolButton on and
@@ -87,8 +91,7 @@ class MarkAllReadInactivePlugin (GObject.Object, Liferea.ShellActivatable):
             # child widget of matching type
             self.markasreadbutton = toolbarbutton.get_children()[0]
             self.markasreadbutton.set_sensitive(False)
-            
+
     def do_deactivate(self):
         self.menuitem.set_sensitive(True)
         self.markasreadbutton.set_sensitive(True)
-        
